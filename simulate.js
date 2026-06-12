@@ -2,15 +2,11 @@ const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue, GeoPoint } = require('firebase-admin/firestore');
 const admin = require('firebase-admin');
 
-// 1. Firebase Admin mit dem GitHub Secret initialisieren
+// Firebase Admin initialisieren
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
+initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = getFirestore();
 
-// 2. LIVE-ROUTE: Hauptstraße N2 durch Zaio (Marokko)
 const route = [
   { latitude: 34.9392, longitude: -2.7485 }, 
   { latitude: 34.9383, longitude: -2.7431 }, 
@@ -25,10 +21,7 @@ const route = [
 ];
 
 async function runSimulation() {
-  // WICHTIG: Tauschen Sie 'demo_vendor_id' aus, falls Ihre App eine andere ID nutzt
   const sellerRef = db.collection('users').doc('tLxGXCKHQDUPOlLxQDpH4zzmP4E2');
-  
-  // Aktuellen Index aus Firestore auslesen
   const docSnap = await sellerRef.get();
   let currentIndex = 0;
   
@@ -36,7 +29,7 @@ async function runSimulation() {
     currentIndex = docSnap.data().currentRouteIndex;
   }
 
-  // 5 Intervalle á 10 Sekunden innerhalb der GitHub-Aktivitätsminute
+  // Läuft für 5 Durchgänge (50 Sekunden)
   for (let i = 0; i < 5; i++) {
     if (currentIndex >= route.length) {
       currentIndex = 0;
@@ -45,34 +38,65 @@ async function runSimulation() {
     const currentPos = route[currentIndex];
 
     try {
-      // KORREKTUR: Daten werden jetzt strukturiert im "location"-Unterverzeichnis abgelegt
       await sellerRef.set({
-        //name: "Demo Verkäufer Zaio",
+       // name: "Demo Verkäufer Zaio",
         //role: "vendor",
         isOnline: true,
         currentRouteIndex: currentIndex + 1,
         updatedAt: FieldValue.serverTimestamp(),
-        
-        // Hier ist das gewünschte "location"-Objekt
         location: {
           latitude: currentPos.latitude,
           longitude: currentPos.longitude,
-          // Wir senden zusätzlich einen echten Firebase GeoPoint mit (oft von Android benötigt)
           geopoint: new GeoPoint(currentPos.latitude, currentPos.longitude)
         }
       }, { merge: true });
 
-      console.log(`[Schritt ${i+1}/5] Zaio N2 updated in 'location': Lat ${currentPos.latitude}, Lng ${currentPos.longitude}`);
+      console.log(`[Schritt ${i+1}/5] Zaio N2: Lat ${currentPos.latitude}, Lng ${currentPos.longitude}`);
     } catch (error) {
       console.error("Fehler beim Schreiben in Firestore:", error);
     }
 
     currentIndex++;
 
-    // 10 Sekunden Pause vor dem nächsten Schritt
     if (i < 4) {
       await new Promise(resolve => setTimeout(resolve, 10000));
     }
+  }
+
+  // AUTOMATISCHER NEUSTART: Triggert sofort den nächsten Workflow-Durchlauf
+  await triggerNextRun();
+}
+
+async function triggerNextRun() {
+  // GitHub stellt diese Variablen automatisch im Server bereit
+  const repo = process.env.GITHUB_REPOSITORY; 
+  const token = process.env.GITHUB_TOKEN; 
+
+  if (!token || !repo) {
+    console.log("Automatischer Neustart übersprungen (Lokaler Test oder fehlendes Token).");
+    return;
+  }
+
+  console.log("Sende Signal an GitHub für den nächsten ununterbrochenen Durchlauf...");
+  
+  try {
+    const response = await fetch(`https://github.com{repo}/actions/workflows/mover.yml/dispatches`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      },
+      body: JSON.stringify({ ref: 'main' }) // Startet den 'main' Branch neu
+    });
+
+    if (response.ok) {
+      console.log("Erfolgreich! Der nächste 10-Sekunden-Block wurde gestartet.");
+    } else {
+      console.error("Fehler beim Workflow-Trigger:", response.status, await response.text());
+    }
+  } catch (err) {
+    console.error("Netzwerkfehler beim Workflow-Trigger:", err);
   }
 }
 
