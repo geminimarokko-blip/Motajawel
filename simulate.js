@@ -9,15 +9,15 @@ const db = getFirestore();
 
 // NEUE ROUTE: Langsames Fahrrad im Stadtzentrum von Zaio (Zick-Zack durch Straßen)
 const route = [
-  { latitude: 34.93750, longitude: -2.73400 }, // 1. Start im Zentrum (Hauptstraße)
-  { latitude: 34.93720, longitude: -2.73410 }, // 2. Geradeaus Richtung Süden
-  { latitude: 34.93690, longitude: -2.73420 }, // 3. Weiter geradeaus
-  { latitude: 34.93685, longitude: -2.73350 }, // 4. Biegt RECHTS ab in die Querstraße
-  { latitude: 34.93680, longitude: -2.73280 }, // 5. Fährt geradeaus durch die Gasse
-  { latitude: 34.93710, longitude: -2.73270 }, // 6. Biegt LINKS ab (Richtung Norden)
-  { latitude: 34.93740, longitude: -2.73260 }, // 7. Fährt geradeaus weiter
-  { latitude: 34.93745, longitude: -2.73330 }, // 8. Biegt wieder LINKS ab (zurück Richtung Start)
-  { latitude: 34.93748, longitude: -2.73380 }  // 9. Schließt die Runde fürs nächste Intervall
+  { latitude: 34.94420, longitude: -2.73500 }, // 1. Start auf der Hauptstraße im Zentrum
+  { latitude: 34.94390, longitude: -2.73510 }, // 2. Fährt geradeaus nach Süden (hält sich rechts)
+  { latitude: 34.94360, longitude: -2.73520 }, // 3. Weiter geradeaus
+  { latitude: 34.94355, longitude: -2.73450 }, // 4. Biegt RECHTS ab in die Seitenstraße
+  { latitude: 34.94350, longitude: -2.73380 }, // 5. Langsam durch die Gasse geradeaus
+  { latitude: 34.94380, longitude: -2.73370 }, // 6. Biegt LINKS ab Richtung Norden
+  { latitude: 34.94410, longitude: -2.73360 }, // 7. Fährt die Parallelstraße hoch
+  { latitude: 34.94415, longitude: -2.73430 }, // 8. Biegt wieder LINKS ab (Richtung Ausgangspunkt)
+  { latitude: 34.94418, longitude: -2.73480 }  // 9. Runde schließt sich fürs nächste Intervall
 ];
 
 async function runSimulation() {
