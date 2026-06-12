@@ -39,8 +39,8 @@ async function runSimulation() {
 
     try {
       await sellerRef.set({
-       // name: "Demo Verkäufer Zaio",
-        //role: "vendor",
+        //name: "Demo Verkäufer Zaio",
+       // role: "vendor",
         isOnline: true,
         currentRouteIndex: currentIndex + 1,
         updatedAt: FieldValue.serverTimestamp(),
@@ -63,21 +63,22 @@ async function runSimulation() {
     }
   }
 
-  // AUTOMATISCHER NEUSTART: Triggert sofort den nächsten Workflow-Durchlauf
+  // JETZT AUTOMATISCHER NEUSTART
   await triggerNextRun();
 }
 
 async function triggerNextRun() {
-  // GitHub stellt diese Variablen automatisch im Server bereit
   const repo = process.env.GITHUB_REPOSITORY; 
   const token = process.env.GITHUB_TOKEN; 
+  // Holt den aktuellen Branch-Namen dynamisch (z.B. "refs/heads/main" -> "main")
+  const branch = process.env.GITHUB_REF ? process.env.GITHUB_REF.replace('refs/heads/', '') : 'main';
 
   if (!token || !repo) {
     console.log("Automatischer Neustart übersprungen (Lokaler Test oder fehlendes Token).");
     return;
   }
 
-  console.log("Sende Signal an GitHub für den nächsten ununterbrochenen Durchlauf...");
+  console.log(`Sende Signal an GitHub für den nächsten Durchlauf auf Branch: ${branch}...`);
   
   try {
     const response = await fetch(`https://github.com{repo}/actions/workflows/mover.yml/dispatches`, {
@@ -87,7 +88,7 @@ async function triggerNextRun() {
         'Accept': 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28'
       },
-      body: JSON.stringify({ ref: 'main' }) // Startet den 'main' Branch neu
+      body: JSON.stringify({ ref: branch }) // Nutzt jetzt den dynamisch ermittelten Branch
     });
 
     if (response.ok) {
