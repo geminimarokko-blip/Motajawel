@@ -7,24 +7,22 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = getFirestore();
 
-// Live-Route durch Zaio, Marokko
+// NEUE ROUTE: Langsames Fahrrad im Stadtzentrum von Zaio (Zick-Zack durch Straßen)
 const route = [
-  { latitude: 34.9392, longitude: -2.7485 }, 
-  { latitude: 34.9383, longitude: -2.7431 }, 
-  { latitude: 34.9371, longitude: -2.7369 }, 
-  { latitude: 34.9360, longitude: -2.7311 }, 
-  { latitude: 34.9351, longitude: -2.7248 }, 
-  { latitude: 34.9342, longitude: -2.7190 }, 
-  { latitude: 34.9351, longitude: -2.7248 }, 
-  { latitude: 34.9360, longitude: -2.7311 },
-  { latitude: 34.9371, longitude: -2.7369 },
-  { latitude: 34.9383, longitude: -2.7431 }
+  { latitude: 34.93750, longitude: -2.73400 }, // 1. Start im Zentrum (Hauptstraße)
+  { latitude: 34.93720, longitude: -2.73410 }, // 2. Geradeaus Richtung Süden
+  { latitude: 34.93690, longitude: -2.73420 }, // 3. Weiter geradeaus
+  { latitude: 34.93685, longitude: -2.73350 }, // 4. Biegt RECHTS ab in die Querstraße
+  { latitude: 34.93680, longitude: -2.73280 }, // 5. Fährt geradeaus durch die Gasse
+  { latitude: 34.93710, longitude: -2.73270 }, // 6. Biegt LINKS ab (Richtung Norden)
+  { latitude: 34.93740, longitude: -2.73260 }, // 7. Fährt geradeaus weiter
+  { latitude: 34.93745, longitude: -2.73330 }, // 8. Biegt wieder LINKS ab (zurück Richtung Start)
+  { latitude: 34.93748, longitude: -2.73380 }  // 9. Schließt die Runde fürs nächste Intervall
 ];
 
 async function runSimulation() {
   const sellerRef = db.collection('users').doc('tLxGXCKHQDUPOlLxQDpH4zzmP4E2');
   
-  // Start-Index aus Firestore holen
   const docSnap = await sellerRef.get();
   let currentIndex = 0;
   
@@ -32,9 +30,9 @@ async function runSimulation() {
     currentIndex = docSnap.data().currentRouteIndex;
   }
 
-  console.log("Starte 30-Minuten-Dauer-Simulation für den Verkäufer...");
+  console.log("🚲 Fahrrad-Straßenverkäufer Simulation gestartet (30 Minuten)...");
 
-  // 180 Durchläufe * 10 Sekunden Pause = 1800 Sekunden = 30 Minuten Live-Fahrt
+  // 180 Durchläufe * 10 Sekunden = 30 Minuten langsame Fahrt
   for (let i = 0; i < 180; i++) {
     if (currentIndex >= route.length) {
       currentIndex = 0;
@@ -44,8 +42,8 @@ async function runSimulation() {
 
     try {
       await sellerRef.set({
-       // name: "Demo Verkäufer Zaio",
-       // role: "vendor",
+       // name: "Fahrrad-Verkäufer Zaio",
+        //role: "vendor",
         isOnline: true,
         currentRouteIndex: currentIndex + 1,
         updatedAt: FieldValue.serverTimestamp(),
@@ -56,20 +54,18 @@ async function runSimulation() {
         }
       }, { merge: true });
 
-      console.log(`[Schritt ${i+1}/180] Zaio N2 aktualisiert: Lat ${currentPos.latitude}, Lng ${currentPos.longitude}`);
+      console.log(`[Schritt ${i+1}/180] Fahrrad-Position: Lat ${currentPos.latitude}, Lng ${currentPos.longitude}`);
     } catch (error) {
-      console.error("Fehler beim Schreiben in Firestore:", error);
+      console.error("Fehler beim Schreiben:", error);
     }
 
     currentIndex++;
 
-    // 10 Sekunden warten vor dem nächsten Schritt (außer beim allerletzten Durchlauf)
+    // 10 Sekunden Pause für ein gemütliches Fahrrad-Tempo
     if (i < 179) {
       await new Promise(resolve => setTimeout(resolve, 10000));
     }
   }
-  
-  console.log("30-Minuten-Simulation erfolgreich beendet.");
 }
 
 runSimulation();
