@@ -33,7 +33,7 @@ async function runSimulation() {
   console.log("🚲 Fahrrad-Straßenverkäufer Simulation gestartet (30 Minuten)...");
 
   // 180 Durchläufe * 10 Sekunden = 30 Minuten langsame Fahrt
-  for (let i = 0; i < 180; i++) {
+  for (let i = 0; i < 1440; i++) {
     if (currentIndex >= route.length) {
       currentIndex = 0;
     }
@@ -62,7 +62,7 @@ async function runSimulation() {
     currentIndex++;
 
     // 10 Sekunden Pause für ein gemütliches Fahrrad-Tempo
-    if (i < 179) {
+    if (i < 1439) {
       await new Promise(resolve => setTimeout(resolve, 10000));
     }
   }
