@@ -1,13 +1,26 @@
-{
-  "type": "service_account",
-  "project_id": "motajawel-e4989",
-  "private_key_id": "f5e721de458efbad262e89267e5c5a1fa549e06c",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCoB69lqb9bkYiM\nxq+T7Yu8svLNQNqGMLfkc2ngvruAI+EzdnG3HaqPa4Xjf8N9mgje8x+K7ERjwt4b\n/0evIJqp89Bkea9bCyzgngk2R6/9kWlDGbPS+CiChn1y4FpDGNn4ElECFiCDmMQ9\nloRhJ53MgcdQwOpubrUqmLqiz7aUAl+yjROQR+fQ7cshI0R86Pdt3/t32MlIEzP9\nMlwQ2vz/J2opwTJTdMA/M/YsHFpYHDP305RQ6HKh4DMiW8NQlQ7+LwQfhy9BFwPZ\nQIM7CptnYu66tCJNEV01Yy9QrM0tzHjB1ANAQuTllwAbCZc2gxwVGZ0t9UvW2m1s\n71UK3MZlAgMBAAECggEAEIEUvXpuBSCnK2tWkplEs50AvqAN9sab7BCusnhkMq1o\n23pY/WCowJvnPkBt42KOWCvENOEzxHgUWJFQqVxypJqB+mR+ELC+ezTlTb4T2hGp\nfQGYyUeTtGJhDw1cqvYqxAmJ3cJuS3llXnFFgRoi5JP4uloAjNFLR9Wm5gKwpG/r\nHvh4bq+1/+Pt1T0uLbHCV6VMuMEeBinrDKaFPUBtF+5KzIJGZijMqXO0y1O2Tl/7\nJ1eYMh6UJt2By2Lkr+o6Vtva8mBCNbJx56HRl73ZsG4H3rJg4hHmFvFQMpd+J4Xl\nDFp3Ed0ee0nFuP/K/8ZrUD/Pj3T9V/Pwci5CfupffwKBgQDaeTPqp9BT67ZUS82Y\nGDnGoF8GnnUp7C8IrqXFIwkAv+GjloO+9ocjZTjXA9h0h91H5BLMqaaSolo3SipR\nSjZ0fM0ducSwtEeT+6BIm7J/4mon2z/AtJ3n5E7XtAn8Q62Kye3mLpPDYJq/3aez\nUetOtYn4iJE6xkaXaM8BmrnOawKBgQDE5F1kdm4m1NP5GMhN6eSsAtQQ1nqqCf09\n4FHhrxkPDOPE3BgQlEx2XWxC8QTl8v4VkDUA4Q6ucrircT5Vk+eC+oLeoG/7wFur\n/lO5asIsn0pHOZ1LNSSi5EgmK2EiYy63DPnXkPNoRAM0Fg6KfUocIRKGJwXSauNs\nrSgMIApSbwKBgHmVKgdVDOMnMnkHFoumL8ESTs/oL1v9TM+QIkDrln8MSg44HWmQ\n2PQhyNggE74GPmdbzfqID2NbZsmORK6ollWNfrkkQQn1yj/YsQK3Y0c4QcucgIZF\n/fqnXBk+4K+7GkE6z2JiWWlJwdU1DbcFx+YtsXLWzbvfzDlG4q0J5o2xAoGBAIvA\n5KGIhos9ifBHrPXQzSVjJI+HDa5gRMaE0Nn2ZT0PkySKbPJnsRZbHZsuZKGrpro7\nj8O9+6PLflUCnpIz16JamkXXb2UslmUwstDrfEQcFKcVuBZH9GdCzgt5wwqbh+8a\nYMSn+H3LuNJhzZRzdgUdXH6oeDNw91iOV9yzaWA1AoGATmap7yWc+3iT5k9ed/cA\nNgac7sJJuz09xuhNvd80EHdbxqlWyZuMnvWMn5Bl0RpD82rjCgwlT1LbX3Tm0n3x\nB0Envb5w2GChKGFZOK2FpxCz5z+pCRWAzKJm14DP0QX1iEnebCe2ZepOlN3AEwrn\n2ipKC3/CkeXI2n6qwLAYoQo=\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-fbsvc@motajawel-e4989.iam.gserviceaccount.com",
-  "client_id": "104551994623335530683",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40motajawel-e4989.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
+name: Live Zaio Vendor Simulation
+
+on:
+  schedule:
+    - cron: '*/1 * * * *' # Startet automatisch jede Minute im Hintergrund
+  workflow_dispatch: # Ermöglicht den manuellen Start auf GitHub per Klick
+
+jobs:
+  run-simulation:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Code aus GitHub auschecken
+      uses: actions/checkout@v4
+
+    - name: Node.js Umgebung einrichten
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Firebase Bibliotheken installieren
+      run: npm install
+
+    - name: Skript starten und 10s Schleife ausführen
+      env:
+        FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      run: node simulate.js
