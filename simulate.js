@@ -7,6 +7,7 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = getFirestore();
 
+// Live-Route durch Zaio, Marokko
 const route = [
   { latitude: 34.9392, longitude: -2.7485 }, 
   { latitude: 34.9383, longitude: -2.7431 }, 
@@ -21,7 +22,9 @@ const route = [
 ];
 
 async function runSimulation() {
-  const sellerRef = db.collection('users').doc('tLxGXCKHQDUPOlLxQDpH4zzmP4E2');
+  const sellerRef = db.collection('users').doc('demo_vendor_id');
+  
+  // Start-Index aus Firestore holen
   const docSnap = await sellerRef.get();
   let currentIndex = 0;
   
@@ -29,8 +32,10 @@ async function runSimulation() {
     currentIndex = docSnap.data().currentRouteIndex;
   }
 
-  // Läuft für 5 Durchgänge (50 Sekunden)
-  for (let i = 0; i < 5; i++) {
+  console.log("Starte 30-Minuten-Dauer-Simulation für den Verkäufer...");
+
+  // 180 Durchläufe * 10 Sekunden Pause = 1800 Sekunden = 30 Minuten Live-Fahrt
+  for (let i = 0; i < 180; i++) {
     if (currentIndex >= route.length) {
       currentIndex = 0;
     }
@@ -39,8 +44,8 @@ async function runSimulation() {
 
     try {
       await sellerRef.set({
-        //name: "Demo Verkäufer Zaio",
-       // role: "vendor",
+        name: "Demo Verkäufer Zaio",
+        role: "vendor",
         isOnline: true,
         currentRouteIndex: currentIndex + 1,
         updatedAt: FieldValue.serverTimestamp(),
@@ -51,54 +56,20 @@ async function runSimulation() {
         }
       }, { merge: true });
 
-      console.log(`[Schritt ${i+1}/5] Zaio N2: Lat ${currentPos.latitude}, Lng ${currentPos.longitude}`);
+      console.log(`[Schritt ${i+1}/180] Zaio N2 aktualisiert: Lat ${currentPos.latitude}, Lng ${currentPos.longitude}`);
     } catch (error) {
       console.error("Fehler beim Schreiben in Firestore:", error);
     }
 
     currentIndex++;
 
-    if (i < 4) {
+    // 10 Sekunden warten vor dem nächsten Schritt (außer beim allerletzten Durchlauf)
+    if (i < 179) {
       await new Promise(resolve => setTimeout(resolve, 10000));
     }
   }
-
-  // JETZT AUTOMATISCHER NEUSTART
-  await triggerNextRun();
-}
-
-async function triggerNextRun() {
-  const repo = process.env.GITHUB_REPOSITORY; 
-  const token = process.env.GITHUB_TOKEN; 
-  // Holt den aktuellen Branch-Namen dynamisch (z.B. "refs/heads/main" -> "main")
-  const branch = process.env.GITHUB_REF ? process.env.GITHUB_REF.replace('refs/heads/', '') : 'main';
-
-  if (!token || !repo) {
-    console.log("Automatischer Neustart übersprungen (Lokaler Test oder fehlendes Token).");
-    return;
-  }
-
-  console.log(`Sende Signal an GitHub für den nächsten Durchlauf auf Branch: ${branch}...`);
   
-  try {
-    const response = await fetch(`https://github.com{repo}/actions/workflows/mover.yml/dispatches`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28'
-      },
-      body: JSON.stringify({ ref: branch }) // Nutzt jetzt den dynamisch ermittelten Branch
-    });
-
-    if (response.ok) {
-      console.log("Erfolgreich! Der nächste 10-Sekunden-Block wurde gestartet.");
-    } else {
-      console.error("Fehler beim Workflow-Trigger:", response.status, await response.text());
-    }
-  } catch (err) {
-    console.error("Netzwerkfehler beim Workflow-Trigger:", err);
-  }
+  console.log("30-Minuten-Simulation erfolgreich beendet.");
 }
 
 runSimulation();
