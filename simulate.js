@@ -26,7 +26,7 @@ const route = [
 
 async function runSimulation() {
   // WICHTIG: Ersetzen Sie 'demo_vendor_id' durch die ID, die Ihre Android-App sucht!
-  const sellerRef = db.collection('users').doc('demo_vendor_id');
+  const sellerRef = db.collection('users').doc('tLxGXCKHQDUPOlLxQDpH4zzmP4E2');
   
   // Aktuellen Index aus Firestore auslesen
   const docSnap = await sellerRef.get();
@@ -47,8 +47,7 @@ async function runSimulation() {
     try {
       // Schreibt exakt in die 'users' Collection laut Ihren Regeln
       await sellerRef.set({
-        name: "Demo Verkäufer Zaio",
-        role: "vendor", // Markiert den Account als Verkäufer für Ihre App
+        // role: "vendor", // Markiert den Account als Verkäufer für Ihre App
         isOnline: true,
         latitude: currentPos.latitude,
         longitude: currentPos.longitude,
