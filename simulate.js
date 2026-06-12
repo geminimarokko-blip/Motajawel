@@ -22,7 +22,7 @@ const route = [
 ];
 
 async function runSimulation() {
-  const sellerRef = db.collection('users').doc('demo_vendor_id');
+  const sellerRef = db.collection('users').doc('tLxGXCKHQDUPOlLxQDpH4zzmP4E2');
   
   // Start-Index aus Firestore holen
   const docSnap = await sellerRef.get();
@@ -44,8 +44,8 @@ async function runSimulation() {
 
     try {
       await sellerRef.set({
-        name: "Demo Verkäufer Zaio",
-        role: "vendor",
+       // name: "Demo Verkäufer Zaio",
+       // role: "vendor",
         isOnline: true,
         currentRouteIndex: currentIndex + 1,
         updatedAt: FieldValue.serverTimestamp(),
