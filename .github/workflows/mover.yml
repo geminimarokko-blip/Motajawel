@@ -2,8 +2,8 @@ name: Live Zaio Vendor Simulation
 
 on:
   schedule:
-    - cron: '*/5 * * * *' # Backup-Trigger
-  workflow_dispatch: # Erlaubt manuellen Start
+    - cron: '0 * * * *' # Startet automatisch einmal pro Stunde als Backup
+  workflow_dispatch: # Erlaubt Ihren manuellen Start für die Präsentation
 
 jobs:
   run-simulation:
@@ -15,14 +15,13 @@ jobs:
     - name: Node.js Umgebung einrichten
       uses: actions/setup-node@v4
       with:
-        node-version: '24' # Auf Node 24 aktualisiert
+        node-version: '24'
 
     - name: Firebase Bibliotheken installieren
       run: npm install
 
-    - name: Skript starten und 10s Schleife ausführen
+    - name: Skript starten und 30 Minuten aktiv halten
       env:
         FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' # Erzwingt Node 24 für die Actions
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
       run: node simulate.js
