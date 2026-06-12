@@ -1,5 +1,5 @@
 const { initializeApp } = require('firebase-admin/app');
-const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const { getFirestore, FieldValue, GeoPoint } = require('firebase-admin/firestore');
 const admin = require('firebase-admin');
 
 // 1. Firebase Admin mit dem GitHub Secret initialisieren
@@ -12,20 +12,20 @@ const db = getFirestore();
 
 // 2. LIVE-ROUTE: Hauptstraße N2 durch Zaio (Marokko)
 const route = [
-  { latitude: 34.9392, longitude: -2.7485 }, // Start (N2 Westeingang)
-  { latitude: 34.9383, longitude: -2.7431 }, // Höhe Avenue Sidi Atmane
-  { latitude: 34.9371, longitude: -2.7369 }, // Stadtzentrum Zaio
-  { latitude: 34.9360, longitude: -2.7311 }, // Nahe Moschee / Markt
-  { latitude: 34.9351, longitude: -2.7248 }, // N2 Richtung Osten
-  { latitude: 34.9342, longitude: -2.7190 }, // Ausgang Richtung Berkane
-  { latitude: 34.9351, longitude: -2.7248 }, // Rückweg für nahtlose Schleife
+  { latitude: 34.9392, longitude: -2.7485 }, 
+  { latitude: 34.9383, longitude: -2.7431 }, 
+  { latitude: 34.9371, longitude: -2.7369 }, 
+  { latitude: 34.9360, longitude: -2.7311 }, 
+  { latitude: 34.9351, longitude: -2.7248 }, 
+  { latitude: 34.9342, longitude: -2.7190 }, 
+  { latitude: 34.9351, longitude: -2.7248 }, 
   { latitude: 34.9360, longitude: -2.7311 },
   { latitude: 34.9371, longitude: -2.7369 },
   { latitude: 34.9383, longitude: -2.7431 }
 ];
 
 async function runSimulation() {
-  // WICHTIG: Ersetzen Sie 'demo_vendor_id' durch die ID, die Ihre Android-App sucht!
+  // WICHTIG: Tauschen Sie 'demo_vendor_id' aus, falls Ihre App eine andere ID nutzt
   const sellerRef = db.collection('users').doc('tLxGXCKHQDUPOlLxQDpH4zzmP4E2');
   
   // Aktuellen Index aus Firestore auslesen
@@ -45,17 +45,24 @@ async function runSimulation() {
     const currentPos = route[currentIndex];
 
     try {
-      // Schreibt exakt in die 'users' Collection laut Ihren Regeln
+      // KORREKTUR: Daten werden jetzt strukturiert im "location"-Unterverzeichnis abgelegt
       await sellerRef.set({
-        // role: "vendor", // Markiert den Account als Verkäufer für Ihre App
+        //name: "Demo Verkäufer Zaio",
+        //role: "vendor",
         isOnline: true,
-        latitude: currentPos.latitude,
-        longitude: currentPos.longitude,
-        currentRouteIndex: currentIndex + 1, // Speichert den Stand für das nächste Intervall
-        updatedAt: FieldValue.serverTimestamp()
+        currentRouteIndex: currentIndex + 1,
+        updatedAt: FieldValue.serverTimestamp(),
+        
+        // Hier ist das gewünschte "location"-Objekt
+        location: {
+          latitude: currentPos.latitude,
+          longitude: currentPos.longitude,
+          // Wir senden zusätzlich einen echten Firebase GeoPoint mit (oft von Android benötigt)
+          geopoint: new GeoPoint(currentPos.latitude, currentPos.longitude)
+        }
       }, { merge: true });
 
-      console.log(`[Schritt ${i+1}/5] Zaio N2 updated: Lat ${currentPos.latitude}, Lng ${currentPos.longitude}`);
+      console.log(`[Schritt ${i+1}/5] Zaio N2 updated in 'location': Lat ${currentPos.latitude}, Lng ${currentPos.longitude}`);
     } catch (error) {
       console.error("Fehler beim Schreiben in Firestore:", error);
     }
