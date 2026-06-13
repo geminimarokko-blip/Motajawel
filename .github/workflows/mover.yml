@@ -2,7 +2,7 @@ name: Live Zaio Vendor Simulation
 
 on:
   schedule:
-    - cron: '0 * * * *' # Startet automatisch einmal pro Stunde als Backup
+    - cron: '0 */4 * * *' # Startet automatisch einmal pro Stunde als Backup
   workflow_dispatch: # Erlaubt Ihren manuellen Start für die Präsentation
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
     - name: Firebase Bibliotheken installieren
       run: npm install
 
-    - name: Skript starten und 30 Minuten aktiv halten
+    - name: Skript starten und 4 Stunden aktiv halten
       env:
         FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
