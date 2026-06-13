@@ -8,7 +8,7 @@ initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = getFirestore();
 
 // NEUE ROUTE: Langsames Fahrrad im Stadtzentrum von Zaio (Zick-Zack durch Straßen)
-const route = [
+const route1 = [
     {
         "latitude":  34.937912,
         "longitude":  -2.726272
