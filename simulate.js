@@ -7,21 +7,6 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = getFirestore();
 
-//Users
-const sellers = [
-  {
-    userId: "tLxGXCKHQDUPOlLxQDpH4zzmP4E2",
-    route: route1
-  },
-  {
-    userId: "B4F1O9lvlRXRHdylrTSkEqf6Xhd2",
-    route: route2
-  },
-  {
-    userId: "9m0nEAAotpNMDoETe3tRx3IPAAt1",
-    route: route3
-  }
-];
 // NEUE ROUTE: Langsames Fahrrad im Stadtzentrum von Zaio (Zick-Zack durch Straßen)
 const route = [
     {
@@ -4181,6 +4166,22 @@ const route3 = [
         "latitude":  34.937888,
         "longitude":  -2.726277
     }
+];
+
+//Users
+const sellers = [
+  {
+    userId: "tLxGXCKHQDUPOlLxQDpH4zzmP4E2",
+    route: route1
+  },
+  {
+    userId: "B4F1O9lvlRXRHdylrTSkEqf6Xhd2",
+    route: route2
+  },
+  {
+    userId: "9m0nEAAotpNMDoETe3tRx3IPAAt1",
+    route: route3
+  }
 ];
 
 
