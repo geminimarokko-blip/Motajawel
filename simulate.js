@@ -2521,7 +2521,7 @@ async function runSimulation() {
       sellers.map((seller) => updateSeller(seller))
     );
 
-    if (i < 1439) {
+    if (i < 1438) {
       await new Promise((resolve) =>
         setTimeout(resolve, 10000)
       );
