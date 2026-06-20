@@ -2490,16 +2490,16 @@ async function updateSeller(seller) {
   try {
     await sellerRef.set(
       {
-        isOnline: true,
-        currentRouteIndex: currentIndex + 1,
+        //isOnline: true,
+        //currentRouteIndex: currentIndex + 1,
         updatedAt: FieldValue.serverTimestamp(),
         location: {
           latitude: currentPos.latitude,
           longitude: currentPos.longitude,
-          geopoint: new GeoPoint(
-            currentPos.latitude,
-            currentPos.longitude
-          )
+          //geopoint: new GeoPoint(
+            //currentPos.latitude,
+            //currentPos.longitude
+          //)
         }
       },
       { merge: true }
