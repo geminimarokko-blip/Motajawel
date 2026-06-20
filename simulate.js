@@ -2496,10 +2496,10 @@ async function updateSeller(seller) {
         location: {
           latitude: currentPos.latitude,
           longitude: currentPos.longitude,
-          //geopoint: new GeoPoint(
-            //currentPos.latitude,
-            //currentPos.longitude
-          //)
+          geopoint: new GeoPoint(
+            currentPos.latitude,
+            currentPos.longitude
+          )
         }
       },
       { merge: true }
