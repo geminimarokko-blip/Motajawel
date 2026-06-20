@@ -2492,14 +2492,14 @@ async function updateSeller(seller) {
       {
         //isOnline: true,
         currentRouteIndex: currentIndex + 1,
-        updatedAt: FieldValue.serverTimestamp(),
+        //updatedAt: FieldValue.serverTimestamp(),
         location: {
           latitude: currentPos.latitude,
           longitude: currentPos.longitude,
-          geopoint: new GeoPoint(
-            currentPos.latitude,
-            currentPos.longitude
-          )
+          //geopoint: new GeoPoint(
+            //currentPos.latitude,
+            //currentPos.longitude
+          //)
         }
       },
       { merge: true }
