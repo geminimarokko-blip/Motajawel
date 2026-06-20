@@ -2490,8 +2490,8 @@ async function updateSeller(seller) {
   try {
     await sellerRef.set(
       {
-        isOnline: true,
-        //currentRouteIndex: currentIndex + 1,
+        //isOnline: true,
+        currentRouteIndex: currentIndex + 1,
         updatedAt: FieldValue.serverTimestamp(),
         location: {
           latitude: currentPos.latitude,
